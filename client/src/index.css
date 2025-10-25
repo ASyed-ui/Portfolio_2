@@ -1,0 +1,58 @@
+/* Import Tailwind CSS utilities */
+@import "tailwindcss"; 
+
+/* Base styles for the entire page */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Space Grotesk", sans-serif; /* Custom font */
+  background: #0a0a0a; /* Dark background */
+  color: #f3f4f6;      /* Light text color */
+}
+
+/* Custom utility classes using Tailwind's @layer utilities */
+@layer utilities {
+
+  /* Blinking cursor animation for loading screens */
+  @keyframes blink {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  /* Apply blinking animation */
+  .animate-blink {
+    animation: blink 0.8s step-end infinite;
+  }
+
+  /* Loading bar sliding animation */
+  @keyframes loading {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(250%);
+    }
+  }
+
+  /* Apply loading bar animation */
+  .animate-loading-bar {
+    animation: loading 0.8s ease infinite;
+  }
+}
+
+/* Reveal on scroll: initial hidden state */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px); /* Slightly down */
+  transition: opacity 0.7s ease, transform 0.7s ease; /* Smooth transition */
+}
+
+/* When element becomes visible */
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0); /* Move into place */
+}
