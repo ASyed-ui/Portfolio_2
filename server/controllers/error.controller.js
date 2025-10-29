@@ -1,5 +1,5 @@
 function handleError(req, res) {
-  // Your code to handle the error
+  // code to handle the error
 }
 function getErrorMessage(errMsg) {
   console.log(errMsg);

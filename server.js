@@ -13,9 +13,9 @@ app.get("/", (req, res) => {
 async function start() {
   try {
     await mongoose.connect(config.mongoUri);
-    console.log("✅ Connected to MongoDB:", config.mongoUri);
+    console.log("Connected to MongoDB:", config.mongoUri);
   } catch (err) {
-    console.error("❌ MongoDB connection error:", err.message);
+    console.error("MongoDB connection error:", err.message);
     process.exit(1);
   }
 
@@ -24,8 +24,8 @@ async function start() {
       console.error("Server failed to start:", err);
       process.exit(1);
     }
-    console.info(`🚀 Server started on port ${config.port}`);
-    console.info(`📝 API endpoints:`);
+    console.info(`Server started on port ${config.port}`);
+    console.info(`API endpoints:`);
     console.info(`   POST http://localhost:${config.port}/api/signin`);
     console.info(`   POST http://localhost:${config.port}/api/users`);
     console.info(`   GET  http://localhost:${config.port}/api/signout`);
