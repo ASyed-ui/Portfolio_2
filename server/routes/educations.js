@@ -1,17 +1,26 @@
+// routes/educations.js
 import express from "express";
-import { createEducation, getAllEducations, getEducationById, updateEducation, deleteEducation, deleteAllEducations } from "../controllers/educations.controller.js";
-import authCtrl from "../controllers/auth.controller.js";
+import {
+  createEducation,
+  getAllEducations,
+  getEducationById,
+  updateEducation,
+  deleteEducation,
+  deleteAllEducations,
+} from "../controllers/educations.controller.js";
+
+import { verifyToken, requireAdmin } from "../controllers/user.controller.js";
 
 const router = express.Router();
 
-// Public routes (optional)
+// Public route: create education (optional)
 router.post("/", createEducation);
 
-// Protected routes
-router.get("/", authCtrl.requireSignin, getAllEducations);
-router.get("/:id", authCtrl.requireSignin, getEducationById);
-router.put("/:id", authCtrl.requireSignin, authCtrl.hasAuthorization, updateEducation);
-router.delete("/:id", authCtrl.requireSignin, authCtrl.hasAuthorization, deleteEducation);
-router.delete("/", authCtrl.requireSignin, deleteAllEducations);
+// Protected routes (Admin only)
+router.get("/", verifyToken, requireAdmin, getAllEducations);
+router.get("/:id", verifyToken, requireAdmin, getEducationById);
+router.put("/:id", verifyToken, requireAdmin, updateEducation);
+router.delete("/:id", verifyToken, requireAdmin, deleteEducation);
+router.delete("/", verifyToken, requireAdmin, deleteAllEducations);
 
 export default router;

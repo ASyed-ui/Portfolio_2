@@ -1,17 +1,26 @@
+// routes/projects.js
 import express from "express";
-import { createProject, getAllProjects, getProjectById, updateProject, deleteProject, deleteAllProjects } from "../controllers/projects.controller.js";
-import authCtrl from "../controllers/auth.controller.js";
+import {
+  createProject,
+  getAllProjects,
+  getProjectById,
+  updateProject,
+  deleteProject,
+  deleteAllProjects,
+} from "../controllers/projects.controller.js";
+
+import { verifyToken, requireAdmin } from "../controllers/user.controller.js";
 
 const router = express.Router();
 
-// Public routes (optional)
+// Public route: create project (optional)
 router.post("/", createProject);
 
-// Protected routes
-router.get("/", authCtrl.requireSignin, getAllProjects);
-router.get("/:id", authCtrl.requireSignin, getProjectById);
-router.put("/:id", authCtrl.requireSignin, authCtrl.hasAuthorization, updateProject);
-router.delete("/:id", authCtrl.requireSignin, authCtrl.hasAuthorization, deleteProject);
-router.delete("/", authCtrl.requireSignin, deleteAllProjects);
+// Protected routes (Admin only)
+router.get("/", verifyToken, requireAdmin, getAllProjects);
+router.get("/:id", verifyToken, requireAdmin, getProjectById);
+router.put("/:id", verifyToken, requireAdmin, updateProject);
+router.delete("/:id", verifyToken, requireAdmin, deleteProject);
+router.delete("/", verifyToken, requireAdmin, deleteAllProjects);
 
 export default router;

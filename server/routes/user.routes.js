@@ -1,17 +1,18 @@
+// routes/user.routes.js
 import express from "express";
 import userCtrl from "../controllers/user.controller.js";
-import authCtrl from "../controllers/auth.controller.js";
-const router = express.Router();
-router.route("/api/users").post(userCtrl.create);
-router.route("/api/users").get(userCtrl.list);
-router
-  .route("/api/users/:userId")
-  .get(authCtrl.requireSignin, userCtrl.read)
-  .put(authCtrl.requireSignin, authCtrl.hasAuthorization, userCtrl.update)
-  .delete(authCtrl.requireSignin, authCtrl.hasAuthorization, userCtrl.remove);
+import { verifyToken, requireAdmin } from "../controllers/user.controller.js";
 
-router.param("userId", userCtrl.userByID);
-router.route("/api/users/:userId").get(userCtrl.read);
-router.route("/api/users/:userId").put(userCtrl.update);
-router.route("/api/users/:userId").delete(userCtrl.remove);
+const router = express.Router();
+
+// Public route - user signup
+router.post("/", userCtrl.signUp);
+
+// Protected routes
+router.get("/", verifyToken, requireAdmin, userCtrl.getAllUsers);
+router.get("/:id", verifyToken, userCtrl.getUserById); // Admin or self check can be done in controller
+router.put("/:id", verifyToken, userCtrl.updateUser);   // Admin or self check in controller
+router.delete("/:id", verifyToken, requireAdmin, userCtrl.deleteUser);
+
 export default router;
+

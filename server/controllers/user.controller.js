@@ -1,75 +1,181 @@
 import User from "../models/user.model.js";
-import extend from "lodash/extend.js";
-import errorHandler from "./error.controller.js";
-const create = async (req, res) => {
-  const user = new User(req.body);
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+
+const JWT_SECRET = process.env.JWT_SECRET || "change_this_secret";
+const TOKEN_EXPIRES_IN = "1d";
+
+// -----------------------------
+// SIGN UP
+// -----------------------------
+export const signUp = async (req, res) => {
   try {
+    const { name, email, password, role } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Name, email and password are required" });
+    }
+
+    // Check if user exists
+    const existing = await User.findOne({ email });
+    if (existing) return res.status(409).json({ message: "Email already in use" });
+
+    const user = new User({ name, email, password, role });
     await user.save();
-    return res.status(200).json({
-      message: "Successfully signed up!",
+
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: TOKEN_EXPIRES_IN });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(201).json({
+      message: "User created successfully",
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
     });
   } catch (err) {
-    return res.status(400).json({
-      error: errorHandler.getErrorMessage(err),
-    });
+    console.error("signUp error", err);
+    return res.status(500).json({ message: "Server error" });
   }
 };
-const list = async (req, res) => {
+
+// -----------------------------
+// SIGN IN
+// -----------------------------
+export const signIn = async (req, res) => {
   try {
-    let users = await User.find().select("name email updated created");
-    res.json(users);
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ message: "Email and password are required" });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: TOKEN_EXPIRES_IN });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    return res.json({
+      message: "Signed in successfully",
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+    });
   } catch (err) {
-    return res.status(400).json({
-      error: errorHandler.getErrorMessage(err),
-    });
+    console.error("signIn error", err);
+    return res.status(500).json({ message: "Server error" });
   }
 };
-const userByID = async (req, res, next, id) => {
+
+// -----------------------------
+// SIGN OUT
+// -----------------------------
+export const signOut = (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
+  return res.json({ message: "Signed out successfully" });
+};
+
+// -----------------------------
+// MIDDLEWARE: VERIFY TOKEN
+// -----------------------------
+export const verifyToken = (req, res, next) => {
   try {
-    let user = await User.findById(id);
-    if (!user)
-      return res.status("400").json({
-        error: "User not found",
-      });
-    req.profile = user;
+    let token = null;
+
+    if (req.cookies && req.cookies.token) token = req.cookies.token;
+    if (!token && req.headers.authorization?.startsWith("Bearer ")) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+    if (!token) return res.status(401).json({ message: "No token provided" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = { id: decoded.id, role: decoded.role };
     next();
   } catch (err) {
-    return res.status("400").json({
-      error: "Could not retrieve user",
-    });
+    console.error("verifyToken error", err);
+    return res.status(401).json({ message: "Unauthorized" });
   }
 };
-const read = (req, res) => {
-  req.profile.hashed_password = undefined;
-  req.profile.salt = undefined;
-  return res.json(req.profile);
+
+// -----------------------------
+// MIDDLEWARE: REQUIRE ADMIN
+// -----------------------------
+export const requireAdmin = (req, res, next) => {
+  if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+  if (req.user.role !== "Admin") return res.status(403).json({ message: "Forbidden" });
+  next();
 };
-const update = async (req, res) => {
+
+// -----------------------------
+// CRUD OPERATIONS
+// -----------------------------
+
+// Get all users (Admin only)
+export const getAllUsers = async (req, res) => {
   try {
-    let user = req.profile;
-    user = extend(user, req.body);
-    user.updated = Date.now();
-    await user.save();
-    user.hashed_password = undefined;
-    user.salt = undefined;
+    const users = await User.find().select("-password");
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Get single user
+export const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
     res.json(user);
   } catch (err) {
-    return res.status(400).json({
-      error: errorHandler.getErrorMessage(err),
-    });
+    res.status(500).json({ error: err.message });
   }
 };
-const remove = async (req, res) => {
+
+// Update user (Admin or self)
+export const updateUser = async (req, res) => {
   try {
-    let user = req.profile;
-    let deletedUser = await user.deleteOne();
-    deletedUser.hashed_password = undefined;
-    deletedUser.salt = undefined;
-    res.json(deletedUser);
+    if (req.body.password) {
+      req.body.password = await bcrypt.hash(req.body.password, 10);
+    }
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
   } catch (err) {
-    return res.status(400).json({
-      error: errorHandler.getErrorMessage(err),
-    });
+    res.status(500).json({ error: err.message });
   }
 };
-export default { create, userByID, read, list, remove, update };
+
+// Delete user (Admin only)
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json({ message: "User deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export default {
+  signUp,
+  signIn,
+  signOut,
+  verifyToken,
+  requireAdmin,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+};
