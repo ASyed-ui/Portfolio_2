@@ -1,0 +1,61 @@
+COMP229 - React/Assignment 3/myportfolio/
+├── package.json
+├── server.js
+├── .github/
+│   └── copilot-instructions.md
+├── client/
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── README.md
+│   ├── vite.config.js
+│   ├── public/
+│   │   └── images/
+│   │       └── projects/
+│   └── src/
+│       ├── App.css
+│       ├── App.jsx
+│       ├── index.css
+│       ├── main.jsx
+│       ├── assets/
+│       ├── components/
+│       │   ├── LoadingScreen.jsx
+│       │   ├── MobileMenu.jsx
+│       │   ├── Navbar.jsx
+│       │   ├── RevealOnScroll.jsx
+│       │   └── sections/
+│       │       ├── About.jsx
+│       │       ├── Contact.jsx
+│       │       ├── Home.jsx
+│       │       ├── Projects.jsx
+│       │       └── Services.jsx
+│       └── router/
+│           └── MainRouter.jsx
+├── config/
+│   └── config.js
+└── server/
+    ├── assets-router.js
+    ├── express.js
+    ├── controllers/
+    │   ├── auth.controller.js
+    │   ├── contacts.controller.js
+    │   ├── educations.controller.js
+    │   ├── error.controller.js
+    │   ├── projects.controller.js
+    │   ├── user.controller.js
+    │   └── users.controller.js
+    ├── helpers/
+    │   └── dbErrorHandler.js
+    ├── models/
+    │   ├── Contact.js
+    │   ├── Education.js
+    │   ├── Project.js
+    │   ├── User.js
+    │   └── user.model.js
+    └── routes/
+        ├── auth.routes.js
+        ├── Contact.js
+        ├── educations.js
+        ├── projects.js
+        ├── user.routes.js
+        └── users.js

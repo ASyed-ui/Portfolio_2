@@ -7,6 +7,7 @@ import { About } from '../components/sections/About';
 import { Projects } from '../components/sections/Projects';
 import { Services } from '../components/sections/Services';
 import { Contact } from '../components/sections/Contact';
+import { SignUp } from '../components/sections/SignUp';
 
 // Optional Layout component if you want Navbar / Footer common to all pages
 import { Navbar } from '../components/Navbar';
@@ -26,6 +27,7 @@ const MainRouter = ({ menuOpen, setMenuOpen }) => {
         <Route path="/projects" element={<Projects />} />
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
     </div>
   );
