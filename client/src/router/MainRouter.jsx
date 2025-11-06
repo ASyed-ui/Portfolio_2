@@ -8,6 +8,8 @@ import { Projects } from '../components/sections/Projects';
 import { Services } from '../components/sections/Services';
 import { Contact } from '../components/sections/Contact';
 import { SignUp } from '../components/sections/SignUp';
+import { SignIn } from '../components/sections/SignIn';
+
 
 // Optional Layout component if you want Navbar / Footer common to all pages
 import { Navbar } from '../components/Navbar';
@@ -28,6 +30,8 @@ const MainRouter = ({ menuOpen, setMenuOpen }) => {
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/signin" element={<SignIn />} />
+
       </Routes>
     </div>
   );
