@@ -1,6 +1,10 @@
+import { useState } from "react";
 import { RevealOnScroll } from "../RevealOnScroll";
+import ProjectForm from "../forms/ProjectForm";
 
 export const Projects = () => {
+    const [showForm, setShowForm] = useState(false);
+
     // Array of featured projects with details
     const projects = [
         {
@@ -29,16 +33,34 @@ export const Projects = () => {
     return (
         <section 
             id="projects" // anchor id for navigation
-            className="min-h-screen flex items-center justify-center py-20"
+            className="min-h-screen flex flex-col items-center justify-center py-20"
         >
-            {/* Animate section when scrolled into view */}
             <RevealOnScroll>
-                <div className="max-w-[85rem] mx-auto px-4">
-                    
+                <div className="max-w-[85rem] mx-auto px-4 w-full">
+
                     {/* Section heading */}
-                    <h2 className="text-3xl font-bold mb-8 bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent text-center">
+                    <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent text-center">
                         Featured Projects
                     </h2>
+
+                    {/* Toggle button for Education Form */}
+                    <div className="flex justify-center mb-8">
+                        <button
+                            onClick={() => setShowForm(!showForm)}
+                            className="px-6 py-2 bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 transition-all"
+                        >
+                            {showForm ? "Hide Project Form" : "Add Project"}
+                        </button>
+                    </div>
+
+                    {/* Conditional rendering of Education Form */}
+                    {showForm && (
+                        <RevealOnScroll>
+                            <div className="max-w-3xl mx-auto px-4 mb-10 p-6 rounded-xl border border-white/10 hover:-translate-y-1 hover:border-blue-500/30 hover:shadow-[0_2px_8px_rgba(59,130,246,0.2)] transition">
+                                <ProjectForm />
+                            </div>
+                        </RevealOnScroll>
+                    )}
 
                     {/* Grid layout for projects */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -74,7 +96,7 @@ export const Projects = () => {
 
                                 {/* Link to view project */}
                                 <div className="flex justify-center">
-                                    <a href="#" className="text-blue-400 hover:text-blue-300 transition-colors my-4">
+                                    <a href={project.link} className="text-blue-400 hover:text-blue-300 transition-colors my-4">
                                         View Project →
                                     </a>
                                 </div>

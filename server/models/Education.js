@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 
 const educationSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  firstname: { type: String, required: true },
-  lastname: { type: String, required: true },
-  email: { type: String, required: true },
-  completion: { type: Date, required: true },
+  institution: { type: String, required: true },
+  degree: { type: String, required: true },
+  fieldOfStudy: { type: String, required: true },
+  startDate: { type: String, required: true },
+  endDate: { type: Date, required: true },
   description: { type: String }
 }, { timestamps: true });
 
