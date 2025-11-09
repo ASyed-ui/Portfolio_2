@@ -31,14 +31,16 @@ const signin = async (req, res) => {
       return res.status(401).json({ error: "Email and password don't match." });
     }
 
-    // Generate JWT token - FIXED: Use consistent payload structure
-    const token = jwt.sign({ _id: user._id.toString() }, config.jwtSecret, { 
-      expiresIn: "1d" 
-    });
+    // Generate JWT token - include _id, role, and email
+    const token = jwt.sign(
+      { _id: user._id.toString(), role: user.role, email: user.email },
+      config.jwtSecret,
+      { expiresIn: "1d" }
+    );
 
     console.log("Token generated successfully");
 
-    // Send token in cookie 
+    // Send token in cookie
     res.cookie("t", token, {
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
       httpOnly: true,
@@ -52,6 +54,7 @@ const signin = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        role: user.role, // include role in response for convenience
       },
     });
   } catch (err) {
@@ -66,11 +69,11 @@ const signout = (req, res) => {
   return res.json({ message: "Signed out successfully" });
 };
 
-// Middleware: Require signin - FIXED: Use correct express-jwt syntax
+// Middleware: Require signin
 const requireSignin = expressjwt({
   secret: config.jwtSecret,
   algorithms: ["HS256"],
-  requestProperty: "auth", // Use requestProperty instead of userProperty
+  requestProperty: "auth", // token payload will appear here
 });
 
 // Middleware: Check if authenticated user is authorized
