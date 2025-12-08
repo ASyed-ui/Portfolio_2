@@ -1,6 +1,7 @@
 // client/src/components/forms/EducationForm.jsx
 import { useState } from "react";
 import { RevealOnScroll } from "../RevealOnScroll";
+import api from "../../utils/api";
 
 export default function EducationForm() {
   const [form, setForm] = useState({
@@ -16,16 +17,13 @@ export default function EducationForm() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const handleChange = (e) => {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  const handleChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
-    // Basic validation
     if (!form.institution || !form.degree || !form.fieldOfStudy) {
       setError("Institution, Degree, and Field of Study are required.");
       return;
@@ -33,35 +31,15 @@ export default function EducationForm() {
 
     setLoading(true);
     try {
-      // Get JWT from localStorage
       const token = localStorage.getItem("token");
-
-      const res = await fetch("http://localhost:5000/api/educations", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` // send JWT for authentication
-        },
-        body: JSON.stringify(form)
+      await api.post("/educations", form, {
+        headers: { Authorization: `Bearer ${token}` }
       });
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || `HTTP ${res.status}`);
-      }
-
-      await res.json();
       setSuccess("Education added successfully!");
-      setForm({
-        institution: "",
-        degree: "",
-        fieldOfStudy: "",
-        startDate: "",
-        endDate: "",
-        description: ""
-      });
+      setForm({ institution: "", degree: "", fieldOfStudy: "", startDate: "", endDate: "", description: "" });
     } catch (err) {
-      setError(err.message || "Failed to add education.");
+      setError(err.response?.data?.error || err.message || "Failed to add education.");
     } finally {
       setLoading(false);
     }
@@ -76,91 +54,17 @@ export default function EducationForm() {
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Institution */}
-            <div className="relative">
-              <input
-                type="text"
-                name="institution"
-                value={form.institution}
-                onChange={handleChange}
-                required
-                placeholder="Institution"
-                className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white transition focus:outline-none focus:border-blue-500 focus:bg-blue-500/5"
-              />
-            </div>
+            <input type="text" name="institution" value={form.institution} onChange={handleChange} placeholder="Institution" required className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white transition focus:outline-none focus:border-blue-500 focus:bg-blue-500/5" />
+            <input type="text" name="degree" value={form.degree} onChange={handleChange} placeholder="Degree" required className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white transition focus:outline-none focus:border-blue-500 focus:bg-blue-500/5" />
+            <input type="text" name="fieldOfStudy" value={form.fieldOfStudy} onChange={handleChange} placeholder="Field of Study" required className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white transition focus:outline-none focus:border-blue-500 focus:bg-blue-500/5" />
+            <input type="month" name="startDate" value={form.startDate} onChange={handleChange} placeholder="Start Date" className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white transition focus:outline-none focus:border-blue-500 focus:bg-blue-500/5" />
+            <input type="month" name="endDate" value={form.endDate} onChange={handleChange} placeholder="End Date" className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white transition focus:outline-none focus:border-blue-500 focus:bg-blue-500/5" />
+            <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description (optional)" rows={4} className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white transition focus:outline-none focus:border-blue-500 focus:bg-blue-500/5" />
 
-            {/* Degree */}
-            <div className="relative">
-              <input
-                type="text"
-                name="degree"
-                value={form.degree}
-                onChange={handleChange}
-                required
-                placeholder="Degree"
-                className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white transition focus:outline-none focus:border-blue-500 focus:bg-blue-500/5"
-              />
-            </div>
-
-            {/* Field of Study */}
-            <div className="relative">
-              <input
-                type="text"
-                name="fieldOfStudy"
-                value={form.fieldOfStudy}
-                onChange={handleChange}
-                required
-                placeholder="Field of Study"
-                className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white transition focus:outline-none focus:border-blue-500 focus:bg-blue-500/5"
-              />
-            </div>
-
-            {/* Start Date */}
-            <div className="relative">
-              <input
-                type="month"
-                name="startDate"
-                value={form.startDate}
-                onChange={handleChange}
-                placeholder="Start Date"
-                className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white transition focus:outline-none focus:border-blue-500 focus:bg-blue-500/5"
-              />
-            </div>
-
-            {/* End Date */}
-            <div className="relative">
-              <input
-                type="month"
-                name="endDate"
-                value={form.endDate}
-                onChange={handleChange}
-                placeholder="End Date"
-                className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white transition focus:outline-none focus:border-blue-500 focus:bg-blue-500/5"
-              />
-            </div>
-
-            {/* Description */}
-            <div className="relative">
-              <textarea
-                name="description"
-                value={form.description}
-                onChange={handleChange}
-                rows={4}
-                placeholder="Description (optional)"
-                className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white transition focus:outline-none focus:border-blue-500 focus:bg-blue-500/5"
-              />
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-500 text-white py-3 px-6 rounded font-medium transition hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(59,130,246,0.4)]"
-            >
+            <button type="submit" disabled={loading} className="w-full bg-blue-500 text-white py-3 px-6 rounded font-medium transition hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(59,130,246,0.4)]">
               {loading ? "Saving..." : "Add Education"}
             </button>
 
-            {/* Messages */}
             {error && <div className="text-red-400 mt-2 text-center">{error}</div>}
             {success && <div className="text-green-400 mt-2 text-center">{success}</div>}
           </form>
