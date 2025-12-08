@@ -1,61 +1,72 @@
 COMP229 - React/Assignment 3/myportfolio/
-├── package.json
-├── server.js
+├── package.json              # Main project configuration and dependencies
+├── package-lock.json        # Dependency lock file
+├── yarn.lock                # Yarn dependency lock file
+├── .babelrc                 # Babel configuration for ES modules
+├── .gitignore              # Git ignore rules
+├── server.js               # Main server entry point
+├── .history/               # Local file history tracking
+│   ├── server/            # Server file history
+│   ├── client/            # Client file history
+│   ├── config/            # Config file history
+│   └── package/           # Package file history
 ├── .github/
-│   └── copilot-instructions.md
+│   └── copilot-instructions.md  # AI agent instructions
 ├── client/
-│   ├── eslint.config.js
-│   ├── index.html
-│   ├── package.json
-│   ├── README.md
-│   ├── vite.config.js
+│   ├── eslint.config.js    # ESLint configuration
+│   ├── index.html          # Main HTML entry point
+│   ├── package.json        # Client-side dependencies
+│   ├── README.md           # Client documentation
+│   ├── vite.config.js      # Vite build configuration
+│   ├── node_modules/       # Client dependencies
 │   ├── public/
 │   │   └── images/
-│   │       └── projects/
+│   │       └── projects/   # Project images for portfolio
 │   └── src/
-│       ├── App.css
-│       ├── App.jsx
-│       ├── index.css
-│       ├── main.jsx
-│       ├── assets/
+│       ├── App.css         # Global application styles
+│       ├── App.jsx         # Root React component
+│       ├── index.css       # Entry point styles
+│       ├── main.jsx        # Application entry point
+│       ├── assets/         # Static assets
 │       ├── components/
-│       │   ├── LoadingScreen.jsx
-│       │   ├── MobileMenu.jsx
-│       │   ├── Navbar.jsx
-│       │   ├── RevealOnScroll.jsx
-│       │   └── sections/
+│       │   ├── LoadingScreen.jsx    # Loading indicator
+│       │   ├── MobileMenu.jsx       # Mobile navigation
+│       │   ├── Navbar.jsx           # Main navigation
+│       │   ├── RevealOnScroll.jsx   # Scroll animation wrapper
+│       │   └── sections/            # Page sections
 │       │       ├── About.jsx
 │       │       ├── Contact.jsx
 │       │       ├── Home.jsx
 │       │       ├── Projects.jsx
-│       │       └── Services.jsx
+│       │       ├── Services.jsx
+│       │       └── SignUp.jsx
 │       └── router/
-│           └── MainRouter.jsx
+│           └── MainRouter.jsx       # Application routing
 ├── config/
-│   └── config.js
+│   └── config.js           # Server & database configuration
 └── server/
-    ├── assets-router.js
-    ├── express.js
-    ├── controllers/
-    │   ├── auth.controller.js
-    │   ├── contacts.controller.js
-    │   ├── educations.controller.js
-    │   ├── error.controller.js
-    │   ├── projects.controller.js
-    │   ├── user.controller.js
-    │   └── users.controller.js
+    ├── assets-router.js    # Static asset handling and routing
+    ├── express.js          # Express app middleware setup & configuration
+    ├── controllers/        # API request handlers (business logic)
+    │   ├── auth.controller.js         # Authentication: signin, signup, signout
+    │   ├── contacts.controller.js     # Contact form submissions
+    │   ├── educations.controller.js   # Education records CRUD
+    │   ├── error.controller.js        # Error handling
+    │   ├── projects.controller.js     # Project portfolio CRUD
+    │   ├── user.controller.js         # Single user operations
+    │   └── users.controller.js        # Multi-user operations
     ├── helpers/
-    │   └── dbErrorHandler.js
-    ├── models/
-    │   ├── Contact.js
-    │   ├── Education.js
-    │   ├── Project.js
-    │   ├── User.js
-    │   └── user.model.js
-    └── routes/
-        ├── auth.routes.js
-        ├── Contact.js
-        ├── educations.js
-        ├── projects.js
-        ├── user.routes.js
-        └── users.js
+    │   └── dbErrorHandler.js    # MongoDB error parsing & formatting
+    ├── models/                  # Mongoose schemas & database models
+    │   ├── Contact.js           # Contact submission schema
+    │   ├── Education.js         # Education history schema
+    │   ├── Project.js           # Portfolio project schema
+    │   ├── User.js              # User account schema (primary)
+    │   └── user.model.js        # Alternative user model
+    └── routes/                  # API route definitions & middleware
+        ├── auth.routes.js       # Authentication routes
+        ├── Contact.js           # Contact routes
+        ├── educations.js        # Education routes
+        ├── projects.js          # Project routes
+        ├── user.routes.js       # User profile routes
+        └── users.js             # Multi-user routes
